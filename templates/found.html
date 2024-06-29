@@ -12,7 +12,9 @@
             <div class="form-group">
             <div class="form-inline text-center">
                 <label>Enter here the music that you want:</label>
-                 <input type="text" name="search" class="form-control" />
+                <label>
+                    <input type="text" name="search" class="form-control" />
+                </label>
             </div>
             </div>
 
@@ -23,15 +25,23 @@
         <div class="alert alert-primary" role="alert">
           Here's the music I found. If it doesn't match, try the query again in more detail.
         </div>
-        <div class="card" style="width: 21rem;">
-          <img class="card-img-top" src="{{trackImage}}" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">{{trackName}}</h5>
-            <p class="card-text">{{trackArtist}} - {{trackAlbum}}</p>
-              <audio controls><source src="{{trackPreview}}"></audio>
-            <a href="https://n8n.louisgallet.fr/webhook/61f08b8c-5bca-4091-a934-da66d9ae09e7/61f08b8c-5bca-4091-a934-da66d9ae09e7/{{trackID}}" class="btn btn-primary">Add to the playlist</a>
-          </div>
-        </div>
+        <div class="container text-center">
+            <div class="row">
+                {% for track in tracks %}
+                <div class="col">
+                    <div class="card" style="width: 21rem;">
+                      <img class="card-img-top" src="{{ track[4] }}" alt="Card image cap">
+                      <div class="card-body">
+                        <h5 class="card-title"> {{ track[0] }} </h5>
+                        <p class="card-text">{{ track[1] }} - {{ track[2] }}</p>
+                          <audio controls><source src="{{ track[3] }}"></audio>
+                        <a href="https://n8n.louisgallet.fr/webhook/61f08b8c-5bca-4091-a934-da66d9ae09e7/61f08b8c-5bca-4091-a934-da66d9ae09e7/{{ track[5] }}" class="btn btn-primary">Add to the playlist</a>
+                      </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
     </div>
 </body>
 </html>

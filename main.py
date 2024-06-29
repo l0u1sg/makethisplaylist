@@ -13,7 +13,7 @@ def form_example():
     if request.method == 'POST':
         search = request.form.get('search')
         result = searchSpotify(search)
-        return render_template("found.html", query=search, trackName=result[0], trackArtist=result[1], trackAlbum=result[2], trackPreview=result[3], trackImage=result[4], trackID=result[5],)
+        return render_template("found.html", query=search, tracks=result)
 
     # otherwise handle the GET request
     return render_template("index.html")
