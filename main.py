@@ -24,17 +24,16 @@ def main_app():
 @app.route('/add/<string:trackid>', methods=['GET'])
 def add_to_playlist(trackid):
     if not os.getenv("n8n_webhook"):
-        return 'n8n_webhook not set'
-    if not trackid:
-        return 'No trackid provided'
+        return render_template("add.html", response="No n8n webhook provided", comment="Please provide a n8n webhook in the .env file", type="error")
     try:
         data = requests.get(os.getenv("n8n_webhook") + "/" + trackid)
         if data.json()['message'] == 'Workflow was started':
-            return 'Track added to playlist'
+            return render_template("add.html", response="Track added to playlist successfully", comment="Enjoy the night \U0001f57a", type="success")
+
         else:
-            return 'Invalid response from server: {}'.format(data.text)
+            return render_template("add.html", response='Invalid response from server', comment=data.text, type="error")
     except requests.exceptions.RequestException as e:
-        return 'Request failed: {}'.format(e)
+        return render_template("add.html", response='Request failed', comment=e, type="error")
 
 
 if __name__ == '__main__':
