@@ -19,3 +19,8 @@ def searchSpotify(spotifySearch, limit=10):
         trackID = results['tracks']['items'][i]['uri']
         tracks.append([trackName, trackArtist, trackAlbum, trackPreview, trackImage, trackID])
     return tracks
+
+
+def createPlaylist(playlistName):
+    #TODO: Implement this function
+    pass
