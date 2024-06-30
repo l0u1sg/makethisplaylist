@@ -3,8 +3,8 @@ import os
 from flask import Flask, request, render_template
 from flask_bootstrap import Bootstrap5
 from utils.spotifyAPI import searchSpotify
-
 import sqlite3
+from random import randint
 
 
 app = Flask(__name__)
@@ -24,10 +24,22 @@ def main():
         if roomSearch:
             return render_template("index.html", response="We found your collaborative playlist", comment="It is a great news, click the button below to access it.", type="success", roomid=roomid)
         else:
-            cursor.execute("INSERT INTO rooms (roomid, spotify_id, playlist_name) VALUES (?, ?, ?)", (roomid, "test", "test"))
-            database.commit()
             return render_template("index.html", response="We could not find your collaborative playlist", comment="Please check the room id and try again or create one.", type="error", roomid=roomid)
     return render_template("index.html")
+
+@app.route('/create', methods=["POST"])
+def create_playlist():
+    playlistName = request.form.get('roomName')
+    if not playlistName:
+        return render_template("create.html", response="Invalid playlist name", comment="Please provide a valid playlist name", type="error")
+    playlistID = "test"
+    # check if the room id already exists
+    roomid = randint(10000000, 99999999)
+    while cursor.execute("SELECT * FROM rooms WHERE roomid = ?", (roomid,)).fetchone():
+        roomid = randint(10000000, 99999999)
+    cursor.execute("INSERT INTO rooms (roomid, spotify_id, playlist_name) VALUES (?, ?, ?)", (roomid, playlistID, playlistName))
+    database.commit()
+    return render_template("create.html", response="Playlist created successfully", comment="Enjoy the night \U0001f57a", type="success", roomid=roomid)
 
 @app.route('/search/<string:roomid>', methods=['GET', 'POST'])
 def main_app(roomid):

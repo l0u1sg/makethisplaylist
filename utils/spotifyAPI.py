@@ -24,3 +24,12 @@ def searchSpotify(spotifySearch, limit=10):
 def createPlaylist(playlistName):
     #TODO: Implement this function
     pass
+
+def spotifyLogin():
+    """
+    This function is used to login to spotify to get the user token
+    :return: user token
+    """
+    credentials = spotipy.oauth2.SpotifyClientCredentials(client_id=os.getenv("client_id"), client_secret=os.getenv("client_secret"))
+    spotify_token = credentials.get_access_token()
+    return spotify_token
