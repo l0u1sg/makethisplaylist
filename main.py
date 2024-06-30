@@ -1,8 +1,9 @@
 import requests
 import os
-from flask import Flask, request, render_template, redirect, session, url_for
+from flask import Flask, request, render_template, redirect, session, url_for, sessions
+from flask_session import Session
 from flask_bootstrap import Bootstrap5
-from utils.spotifyAPI import searchSpotify, create_spotify_oauth
+from utils.spotifyAPI import searchSpotify, create_spotify_oauth, get_spotify_username
 from utils.generateQRCode import generateQRCode
 import sqlite3
 from random import randint
@@ -27,7 +28,7 @@ def main():
             return render_template("index.html", response="We could not find your collaborative playlist", comment="Please check the room id and try again or create one.", type="error", roomid=roomid)
     return render_template("index.html")
 
-@app.route('/create', methods=["POST"])
+@app.route('/create', methods=["GET", "POST"])
 def create_playlist():
     playlistName = request.form.get('roomName')
     if not playlistName:
@@ -78,20 +79,26 @@ def add_to_playlist(roomid, trackid):
 def authentification():
     sp_auth = create_spotify_oauth()
     auth_url = sp_auth.get_authorize_url()
+    session["token_info"] = sp_auth.get_cached_token()
     return redirect(auth_url)
 
 @app.route('/callback')
 def callback():
     sp_oauth = create_spotify_oauth()
-    code = requests.args.get('code')
+    code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     session["TOKEN_INFO"] = token_info
-    return redirect(url_for('create'))
+    return redirect(url_for('info'))
+
+@app.route("/info")
+def info():
+    return get_spotify_username()
 
 if __name__ == '__main__':
     if not os.getenv("client_id") or not os.getenv("client_secret") or not os.getenv("n8n_webhook"):
         print("Please provide client_id, client_secret and n8n_webhook in the .env file")
         exit(1)
+    app.secret_key = 'super secret key'
     if os.getenv("enviroment") != "production":
         app.run(debug=True, port="3000", host="0.0.0.0")
     else:

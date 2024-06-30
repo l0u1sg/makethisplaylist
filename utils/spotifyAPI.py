@@ -37,3 +37,6 @@ def create_spotify_oauth():
         redirect_uri=url_for('callback', _external=True),
         scope='playlist-modify-public'
     )
+
+def get_spotify_username():
+    return spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=os.getenv("client_id"), client_secret=os.getenv("client_secret"), redirect_uri=url_for('callback', _external=True))).me()
