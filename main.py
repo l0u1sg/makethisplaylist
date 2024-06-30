@@ -12,7 +12,7 @@ bootstrap = Bootstrap5(app)
 
 database = sqlite3.connect("database.db", check_same_thread=False)
 cursor = database.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS rooms (roomid TEXT PRIMARY KEY, spotify_id TEXT)")
+cursor.execute("CREATE TABLE IF NOT EXISTS rooms (roomid TEXT PRIMARY KEY, spotify_id TEXT, playlist_name TEXT)")
 
 @app.route("/", methods=['GET', 'POST'])
 def main():
@@ -22,23 +22,26 @@ def main():
             return render_template("index.html", response="Invalid room id", comment="A room ID should be composed of number and have a lenght of 8 characters", type="error", roomid=roomid)
         roomSearch = cursor.execute("SELECT * FROM rooms WHERE roomid = ?", (roomid,)).fetchone()
         if roomSearch:
-            return render_template("index.html", response="We found your collaborative playlist", comment="It's great news, click the button below to access it.", type="success", roomid=roomid)
+            return render_template("index.html", response="We found your collaborative playlist", comment="It is a great news, click the button below to access it.", type="success", roomid=roomid)
         else:
-            cursor.execute("INSERT INTO rooms (roomid, spotify_id) VALUES (?, ?)", (roomid, "test"))
+            cursor.execute("INSERT INTO rooms (roomid, spotify_id, playlist_name) VALUES (?, ?, ?)", (roomid, "test", "test"))
             database.commit()
-            return render_template("index.html", response="We couldn't find your collaborative playlist", comment="Please check the room id and try again or create one.", type="error", roomid=roomid)
+            return render_template("index.html", response="We could not find your collaborative playlist", comment="Please check the room id and try again or create one.", type="error", roomid=roomid)
     return render_template("index.html")
 
 @app.route('/search/<string:roomid>', methods=['GET', 'POST'])
 def main_app(roomid):
+    if len(roomid) != 8 or not cursor.execute("SELECT * FROM rooms WHERE roomid = ?", (roomid,)).fetchone():
+        return main()
+    playlistName = cursor.execute("SELECT playlist_name FROM rooms WHERE roomid = ?", (roomid,)).fetchone()[0]
     # handle the POST request
     if request.method == 'POST':
         search = request.form.get('search')
         result = searchSpotify(search)
-        return render_template("found.html", query=search, tracks=result, roomid=roomid)
+        return render_template("found.html", query=search, tracks=result, roomid=roomid, playlistName=playlistName)
 
     # otherwise handle the GET request
-    return render_template("search.html")
+    return render_template("search.html", roomid=roomid, playlistName=playlistName)
 
 @app.route('/add/<string:roomid>/<string:trackid>', methods=['GET'])
 def add_to_playlist(roomid, trackid):
