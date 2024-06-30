@@ -35,7 +35,7 @@
                         <h5 class="card-title"> {{ track[0] }} </h5>
                         <p class="card-text">{{ track[1] }} - {{ track[2] }}</p>
                           <audio controls><source src="{{ track[3] }}"></audio>
-                          <form method="GET" action="/add/{{track[5]}}">
+                          <form method="GET" action="/add/{{roomid}}/{{track[5]}}">
                             <input type="hidden" name="track" value="{{ track[5] }}">
                             <input type="submit" value="Add to the playlist" class="btn btn-primary">
                           </form>
