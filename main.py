@@ -1,11 +1,11 @@
 import requests
 import os
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, session, url_for
 from flask_bootstrap import Bootstrap5
-from utils.spotifyAPI import searchSpotify
+from utils.spotifyAPI import searchSpotify, create_spotify_oauth
+from utils.generateQRCode import generateQRCode
 import sqlite3
 from random import randint
-
 
 app = Flask(__name__)
 bootstrap = Bootstrap5(app)
@@ -31,7 +31,7 @@ def main():
 def create_playlist():
     playlistName = request.form.get('roomName')
     if not playlistName:
-        return render_template("create.html", response="Invalid playlist name", comment="Please provide a valid playlist name", type="error")
+        return redirect(url_for('main'))
     playlistID = "test"
     # check if the room id already exists
     roomid = randint(10000000, 99999999)
@@ -39,7 +39,9 @@ def create_playlist():
         roomid = randint(10000000, 99999999)
     cursor.execute("INSERT INTO rooms (roomid, spotify_id, playlist_name) VALUES (?, ?, ?)", (roomid, playlistID, playlistName))
     database.commit()
-    return render_template("create.html", response="Playlist created successfully", comment="Enjoy the night \U0001f57a", type="success", roomid=roomid)
+    qrcode = generateQRCode("http://localhost:3000/search/" + str(roomid))
+    print(qrcode)
+    return render_template("create.html", response="Playlist created successfully", comment="Enjoy the night \U0001f57a (and share this QRCode with your friends)", image=qrcode, type="success", roomid=roomid)
 
 @app.route('/search/<string:roomid>', methods=['GET', 'POST'])
 def main_app(roomid):
@@ -71,6 +73,20 @@ def add_to_playlist(roomid, trackid):
     except requests.exceptions.RequestException as e:
         return render_template("add.html", response='Request failed', comment=e, type="error", roomid=roomid)
 
+
+@app.route('/authenticate')
+def authentification():
+    sp_auth = create_spotify_oauth()
+    auth_url = sp_auth.get_authorize_url()
+    return redirect(auth_url)
+
+@app.route('/callback')
+def callback():
+    sp_oauth = create_spotify_oauth()
+    code = requests.args.get('code')
+    token_info = sp_oauth.get_access_token(code)
+    session["TOKEN_INFO"] = token_info
+    return redirect(url_for('create'))
 
 if __name__ == '__main__':
     if not os.getenv("client_id") or not os.getenv("client_secret") or not os.getenv("n8n_webhook"):

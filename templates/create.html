@@ -24,6 +24,7 @@
                             title:"{{ response }}",
                             text: "{{ comment }}",
                             icon: "{{ type }}",
+                            imageUrl: "data:image/png;base64, {{ image }}",
                             confirmButtonText: "Add some music!",
                         }).then(function() {
                                 window.location = "/search/{{ roomid }}";
