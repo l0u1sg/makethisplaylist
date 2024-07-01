@@ -41,7 +41,6 @@ def create_playlist():
         data = requests.get((os.getenv("n8n_webhook_create_playlist") + "/" + str(roomid) + "/" + playlistName))
         playlistID = data.json()['playlistID']
         spotifyURL = data.json()['spotifyURL']
-        print(playlistID)
         cursor.execute("INSERT INTO rooms (roomid, spotify_id, playlist_name, spotify_URL) VALUES (?, ?, ?, ?)",
                        (roomid, playlistID, playlistName, spotifyURL))
         database.commit()
@@ -54,7 +53,7 @@ def create_playlist():
         return render_template("create.html", response='Request failed', comment=e, type="error")
 
 @app.route('/search/<string:roomid>', methods=['GET', 'POST'])
-def main_app(roomid):
+def search(roomid):
     if len(roomid) != 8 or not cursor.execute("SELECT * FROM rooms WHERE roomid = ?", (roomid,)).fetchone():
         return main()
     playlistName = cursor.execute("SELECT playlist_name FROM rooms WHERE roomid = ?", (roomid,)).fetchone()[0]
@@ -69,16 +68,12 @@ def main_app(roomid):
     # otherwise handle the GET request
     return render_template("search.html", roomid=roomid, playlistName=playlistName, spotifyURL=spotifyURL)
 
-@app.route('/add/<string:roomid>/<string:playlistID>/<string:trackid>', methods=['GET'])
+@app.route('/add/room/<string:roomid>/playlist/<string:playlistID>/track/<string:trackid>', methods=['GET'])
 def add_to_playlist(roomid, playlistID, trackid):
-    print(roomid)
-    print(playlistID)
-    print(trackid)
     if not os.getenv("n8n_webhook_add_tracks"):
         return render_template("add.html", response="No n8n webhook provided", comment="Please provide a n8n webhook in the .env file", type="error", roomid=roomid)
     try:
         data = requests.get(os.getenv("n8n_webhook_add_tracks") + "/" + playlistID + "/" + trackid)
-        print(data.json)
         if data.json()['status'] == 'success':
             return render_template("add.html", response="Track added to playlist successfully", comment="Enjoy the night \U0001f57a", type="success", roomid=roomid)
 

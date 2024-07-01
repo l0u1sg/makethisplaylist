@@ -1,0 +1,207 @@
+{
+  "name": "PlaylistCreator Workflows",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Workflow to add track to a playlist\n\nThis webhook is called with the following parameters: `playlistid` and `trackid`, which are sent by the Flask application. This webhook will attempt to add the desired track to the playlist. We assume that the playlist exists and that the current user has the right to add a track to it. As for the `trackid`, it is guaranteed to be valid since it is retrieved from the Spotify API.",
+        "height": 212,
+        "width": 495
+      },
+      "id": "1c6779f6-ed75-457e-b19c-dd24268eb527",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "playlist",
+        "id": "={{ $json.params.playlistid }}",
+        "trackID": "={{ $('Add Track Webhook').item.json.params.trackid }}",
+        "additionalFields": {}
+      },
+      "id": "6defaf1d-1c28-46d2-b31f-55b02cd8dda3",
+      "name": "Add track to the Spotify Playlist",
+      "type": "n8n-nodes-base.spotify",
+      "typeVersion": 1,
+      "position": [
+        680,
+        320
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "spotifyOAuth2Api": {
+          "id": "ry4GegWcWUTXupsE",
+          "name": "Spotify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "playlist",
+        "operation": "create",
+        "name": "={{ $json.params.playlistName }} -  {{ $json.params.roomID }}",
+        "additionalFields": {
+          "description": "=Playlist created with Make This Playlist - https://makethisplaylist.louisgallet.fr. Add some music by entering the roomID:  {{ $json.params.roomID }}",
+          "public": true
+        }
+      },
+      "id": "319efc18-903e-42d2-bb72-ce50b8bef1ee",
+      "name": "Create a Spotify playlist",
+      "type": "n8n-nodes-base.spotify",
+      "typeVersion": 1,
+      "position": [
+        660,
+        740
+      ],
+      "credentials": {
+        "spotifyOAuth2Api": {
+          "id": "ry4GegWcWUTXupsE",
+          "name": "Spotify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Workflow to create a Spotify playlist\n\nThis webhook is called with the following parameters: `roomid` and `playlistid`, which are sent by the Flask application. This webhook will attempt to create the playlist on the associated Spotify account. We assume that the playlist name will be unique, as it uses the following format: `playlist name` - `roomid`.",
+        "height": 212,
+        "width": 495
+      },
+      "id": "972e1642-69f9-4458-b252-35b8446f4a15",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        480,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"playlistID\": \"{{ $json.id }}\", \n  \"spotifyURL\": \"{{ $json.external_urls.spotify }}\"\n} ",
+        "options": {}
+      },
+      "id": "4223f8bf-0c4d-4184-8a50-bb3e9f1bb1fb",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\"\n}",
+        "options": {}
+      },
+      "id": "296a009b-cfb2-4594-bedc-7362b5f0e7eb",
+      "name": "Respond to Webhook1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        860,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "path": "61f08b8c-5bca-4091-a934-da66d9ae09e7/:playlistid/:trackid",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "de91df67-33f9-4a6a-aaa4-17a272d54968",
+      "name": "Add Track Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        500,
+        320
+      ],
+      "webhookId": "61f08b8c-5bca-4091-a934-da66d9ae09e7",
+      "notesInFlow": true
+    },
+    {
+      "parameters": {
+        "path": "b1447737-cf34-43d5-8d42-8fb29fbfa275/:roomID/:playlistName",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "2b8e9c76-786e-4784-aa8c-0789727b375b",
+      "name": "Create Playlist Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        480,
+        740
+      ],
+      "webhookId": "b1447737-cf34-43d5-8d42-8fb29fbfa275"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create a Spotify playlist": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add track to the Spotify Playlist": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Track Webhook": {
+      "main": [
+        [
+          {
+            "node": "Add track to the Spotify Playlist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Playlist Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create a Spotify playlist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Paris",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "21bcacb5-a3ce-4355-ba98-bb3c865e2905",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ebecfc6e81edd91c6988c37863cd68c7d8e130f8ce8a9ab9fe59ab24a8d3949"
+  },
+  "id": "kWG5BTxflXVL7fFm",
+  "tags": []
+}
