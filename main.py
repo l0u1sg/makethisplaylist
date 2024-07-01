@@ -41,7 +41,6 @@ def create_playlist():
         data = requests.get((os.getenv("n8n_webhook_create_playlist") + "/" + str(roomid) + "/" + playlistName))
         playlistID = data.json()['playlistID']
         spotifyURL = data.json()['spotifyURL']
-        print(playlistID)
         cursor.execute("INSERT INTO rooms (roomid, spotify_id, playlist_name, spotify_URL) VALUES (?, ?, ?, ?)",
                        (roomid, playlistID, playlistName, spotifyURL))
         database.commit()
@@ -71,14 +70,10 @@ def search(roomid):
 
 @app.route('/add/room/<string:roomid>/playlist/<string:playlistID>/track/<string:trackid>', methods=['GET'])
 def add_to_playlist(roomid, playlistID, trackid):
-    print(roomid)
-    print(playlistID)
-    print(trackid)
     if not os.getenv("n8n_webhook_add_tracks"):
         return render_template("add.html", response="No n8n webhook provided", comment="Please provide a n8n webhook in the .env file", type="error", roomid=roomid)
     try:
         data = requests.get(os.getenv("n8n_webhook_add_tracks") + "/" + playlistID + "/" + trackid)
-        print(data.json)
         if data.json()['status'] == 'success':
             return render_template("add.html", response="Track added to playlist successfully", comment="Enjoy the night \U0001f57a", type="success", roomid=roomid)
 
