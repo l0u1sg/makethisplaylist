@@ -7,6 +7,11 @@ Make This Playlist is a web application that allows anyone to add music to a Spo
 - Search for music on Spotify
 - Add music to a playlist
 
+## Requirements
+- n8n account or instance
+- n8n workflow (import [n8n workflow file](https://gitea.louisgallet.fr/lgallet/makethisplaylist/src/branch/main/n8n_workflow.json) into your account and set your Spotify credentials)
+- Spotify Developer Account
+
 ## Installation
 
 ### Docker
