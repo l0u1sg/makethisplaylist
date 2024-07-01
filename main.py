@@ -88,7 +88,7 @@ if __name__ == '__main__':
         print("Please provide client_id, client_secret and n8n_webhook in the .env file")
         exit(1)
     app.secret_key = 'super secret key'
-    if os.getenv("enviroment") != "production":
+    if os.getenv("environment") != "production":
         app.run(debug=True, port="3000", host="0.0.0.0")
     else:
         app.run(debug=False, port="3000", host="0.0.0.0")
