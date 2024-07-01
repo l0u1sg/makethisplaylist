@@ -10,17 +10,26 @@
         <div>
                 <div>
                     <script>
+                        if ("{{type}}" === "error") {
+                            Swal.fire({
+                                title: "{{ response }}",
+                                text: "{{ comment }}",
+                                icon: "{{ type }}",
+                                confirmButtonText: "Try again",
+                            }).then(function() {
+                                window.location = "/";
+                            })
+                        }
                         Swal.fire({
                             title:"{{ response }}",
                             text: "{{ comment }}",
                             icon: "{{ type }}",
-                            confirmButtonText: "Add another track",
+                            imageUrl: "data:image/png;base64, {{ image }}",
+                            confirmButtonText: "Add some music!",
                         }).then(function() {
                                 window.location = "/search/{{ roomid }}";
                         })
-
                     </script>
                 </div>
         </div>
     </body>
-</html>

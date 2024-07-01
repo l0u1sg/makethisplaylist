@@ -8,6 +8,12 @@
 </head>
 <body>
     <div class="container text-center">
+        <h2>Welcome</h2>
+        <p>Choose the music that will play tonight.</p>
+        <p>Info: You're in room: <b>{{ roomid }} </b>, the playlist is called: <b>{{ playlistName }} </b></p>
+        <form action="{{spotifyURL}}">
+            <button class="btn btn-success">Open in Spotify</button>
+        </form>
         <form method="POST">
             <div class="form-group">
             <div class="form-inline text-center">
@@ -35,7 +41,7 @@
                         <h5 class="card-title"> {{ track[0] }} </h5>
                         <p class="card-text">{{ track[1] }} - {{ track[2] }}</p>
                           <audio controls><source src="{{ track[3] }}"></audio>
-                          <form method="GET" action="/add/{{track[5]}}">
+                          <form method="GET" action="/add/{{roomid}}/{{playlistID}}/{{track[5]}}">
                             <input type="hidden" name="track" value="{{ track[5] }}">
                             <input type="submit" value="Add to the playlist" class="btn btn-primary">
                           </form>
