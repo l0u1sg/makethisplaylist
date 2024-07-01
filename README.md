@@ -10,13 +10,15 @@ Make This Playlist is a web application that allows anyone to add music to a Spo
 ## Installation
 
 ### Docker
-You can install the application via Docker. To do this, execute the following command:
+You can install the application via Docker. To do this, execute the following command:  
+For the webhook URLs, make sure to remove the parameters, as they will be added directly by the application.
 ```bash
 docker run -d \
   -p 80:3000 \
   -e client_id=SPOTIFY_CLIENT_ID \
   -e client_secret=SPOTIFY_CLIENT_SECRET \
-  -e n8n_webhook=N8N_WEBHOOK_URL \
+  -e n8n_webhook_create_playlist=N8N_WEBHOOK_URL \
+  -e n8n_webhook_add_tracks=N8N_WEBHOOK_URL \
   gitea.louisgallet.fr/lgallet/makethisplaylist:latest
 ```
 
@@ -26,5 +28,6 @@ To install the application manually, clone the repository and install the depend
 git clone https://gitea.louisgallet.fr/lgallet/makethisplaylist.git
 cd makethisplaylist
 pip install -r requirements.txt
+cp .env.example .env
 python main.py
 ```
