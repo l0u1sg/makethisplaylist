@@ -20,23 +20,3 @@ def searchSpotify(spotifySearch, limit=10):
         trackID = results['tracks']['items'][i]['uri']
         tracks.append([trackName, trackArtist, trackAlbum, trackPreview, trackImage, trackID])
     return tracks
-
-
-def createPlaylist(playlistName):
-    #TODO: Implement this function
-    pass
-
-def create_spotify_oauth():
-    """
-    This function creates a Spotify OAuth object
-    :return: SpotifyOAuth object
-    """
-    return SpotifyOAuth(
-        client_id=os.getenv("client_id"),
-        client_secret=os.getenv("client_secret"),
-        redirect_uri=url_for('callback', _external=True),
-        scope='playlist-modify-public'
-    )
-
-def get_spotify_username():
-    return spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=os.getenv("client_id"), client_secret=os.getenv("client_secret"), redirect_uri=url_for('callback', _external=True))).me()

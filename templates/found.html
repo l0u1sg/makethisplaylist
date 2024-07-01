@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Results</title>
+    {{ bootstrap.load_css() }}
+
+</head>
+<body>
+    <div class="container text-center">
+        <h2>Welcome</h2>
+        <p>Choose the music that will play tonight.</p>
+        <p>Info: You're in room: <b>{{ roomid }} </b>, the playlist is called: <b>{{ playlistName }} </b></p>
+        <form action="{{spotifyURL}}">
+            <button class="btn btn-success">Open in Spotify</button>
+        </form>
+        <form method="POST">
+            <div class="form-group">
+            <div class="form-inline text-center">
+                <label>Enter here the music that you want:</label>
+                <label>
+                    <input type="text" name="search" class="form-control" />
+                </label>
+            </div>
+            </div>
+
+            <div class="text-center">
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </div>
+        </form>
+        <div class="alert alert-primary" role="alert">
+          Here's the music I found. If it doesn't match, try the query again in more detail.
+        </div>
+        <div class="container text-center">
+            <div class="row">
+                {% for track in tracks %}
+                <div class="col">
+                    <div class="card" style="width: 21rem;">
+                      <img class="card-img-top" src="{{ track[4] }}" alt="Card image cap">
+                      <div class="card-body">
+                        <h5 class="card-title"> {{ track[0] }} </h5>
+                        <p class="card-text">{{ track[1] }} - {{ track[2] }}</p>
+                          <audio controls><source src="{{ track[3] }}"></audio>
+                          <form method="GET" action="/add/{{roomid}}/{{playlistID}}/{{track[5]}}">
+                            <input type="hidden" name="track" value="{{ track[5] }}">
+                            <input type="submit" value="Add to the playlist" class="btn btn-primary">
+                          </form>
+                      </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+    </div>
+</body>
+</html>
