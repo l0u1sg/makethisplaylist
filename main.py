@@ -44,7 +44,7 @@ def create_playlist():
         cursor.execute("INSERT INTO rooms (roomid, spotify_id, playlist_name, spotify_URL) VALUES (?, ?, ?, ?)",
                        (roomid, playlistID, playlistName, spotifyURL))
         database.commit()
-        qrcode = generateQRCode("http://localhost:3000/search/" + str(roomid))
+        qrcode = generateQRCode(os.getenv("hostname") + "/search/" + str(roomid))
         return render_template("create.html", response="Playlist created successfully",
                                comment="Enjoy the night \U0001f57a (and share this QRCode with your friends)",
                                image=qrcode, type="success", roomid=roomid)
