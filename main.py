@@ -54,7 +54,7 @@ def create_playlist():
         return render_template("create.html", response='Request failed', comment=e, type="error")
 
 @app.route('/search/<string:roomid>', methods=['GET', 'POST'])
-def main_app(roomid):
+def search(roomid):
     if len(roomid) != 8 or not cursor.execute("SELECT * FROM rooms WHERE roomid = ?", (roomid,)).fetchone():
         return main()
     playlistName = cursor.execute("SELECT playlist_name FROM rooms WHERE roomid = ?", (roomid,)).fetchone()[0]
@@ -69,7 +69,7 @@ def main_app(roomid):
     # otherwise handle the GET request
     return render_template("search.html", roomid=roomid, playlistName=playlistName, spotifyURL=spotifyURL)
 
-@app.route('/add/<string:roomid>/<string:playlistID>/<string:trackid>', methods=['GET'])
+@app.route('/add/room/<string:roomid>/playlist/<string:playlistID>/track/<string:trackid>', methods=['GET'])
 def add_to_playlist(roomid, playlistID, trackid):
     print(roomid)
     print(playlistID)
