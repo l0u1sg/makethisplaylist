@@ -24,6 +24,7 @@ docker run -d \
   -e client_secret=SPOTIFY_CLIENT_SECRET \
   -e n8n_webhook_create_playlist=N8N_WEBHOOK_URL \
   -e n8n_webhook_add_tracks=N8N_WEBHOOK_URL \
+  -e environment=production \
   gitea.louisgallet.fr/lgallet/makethisplaylist:latest
 ```
 
