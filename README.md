@@ -25,7 +25,8 @@ docker run -d \
   -e n8n_webhook_create_playlist=N8N_WEBHOOK_URL \
   -e n8n_webhook_add_tracks=N8N_WEBHOOK_URL \
   -e environment=production \
-  -e hostname=https://example.com
+  -e hostname=https://example.com \
+  -v "$(pwd)/database.db:/app/database.db" \
   gitea.louisgallet.fr/lgallet/makethisplaylist:latest
 ```
 
